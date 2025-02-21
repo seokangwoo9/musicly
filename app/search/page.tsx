@@ -13,7 +13,7 @@ interface SearchProps {
 export const revalidate = 0;
 
 const Search = async ({ searchParams }: SearchProps) => {
-  const title = searchParams.title || ""; // Fallback to empty string if undefined
+  const title = searchParams?.title || ""; // Ensure title is a string
   const songs: Song[] = await getSongsByTitle(title);
 
   return (
