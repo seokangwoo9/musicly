@@ -1,7 +1,7 @@
-// import getSongsByTitle from "@/actions/getSongsByTitle";
-// import Header from "@/components/Header";
-// import SearchInput from "@/components/SearchInput";
-// import SearchContent from "./components/SearchContent";
+import getSongsByTitle from "@/actions/getSongsByTitle";
+import Header from "@/components/Header";
+import SearchInput from "@/components/SearchInput";
+import SearchContent from "./components/SearchContent";
 
 // interface SearchProps {
 //   searchParams: {
@@ -29,17 +29,12 @@
 
 // export default Search;
 
-import getSongsByTitle from "@/actions/getSongsByTitle";
-import Header from "@/components/Header";
-import SearchInput from "@/components/SearchInput";
-import SearchContent from "./components/SearchContent";
-
 interface SearchProps {
-  searchParams: Record<string, string | undefined>; // Allows searchParams to be a flexible object
+  searchParams: Record<string, string | undefined>;
 }
 
 const Search = async ({ searchParams }: SearchProps) => {
-  const title = searchParams.title || ""; // Ensure title has a fallback to avoid undefined errors
+  const title = searchParams.title || ''; // Default to an empty string if undefined
   const songs = await getSongsByTitle(title);
 
   return (
