@@ -6,14 +6,14 @@ import { Song } from "@/types";
 
 interface SearchProps {
   searchParams: {
-    title: string;
+    title?: string; // Optional to avoid errors when no params are passed
   };
 }
 
 export const revalidate = 0;
 
-const Search = async (props: SearchProps) => {
-  const { title } = props.searchParams;
+const Search = async ({ searchParams }: SearchProps) => {
+  const title = searchParams.title || ""; // Default to an empty string if undefined
   const songs: Song[] = await getSongsByTitle(title);
 
   return (
