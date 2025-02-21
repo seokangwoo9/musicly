@@ -1,8 +1,10 @@
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
-/* eslint-disable @typescript-eslint/no-empty-interface */
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  customProp?: string; // Example custom property
+}
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, children, disabled, type = "button", ...props }, ref) => {

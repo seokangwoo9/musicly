@@ -2,9 +2,11 @@ import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 
-/* eslint-disable @typescript-eslint/no-empty-interface */
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
-/* eslint-enable @typescript-eslint/no-empty-interface */
+
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  customProp?: string; // Example custom property
+}
+
 
 const Input = forwardRef<HTMLInputElement,InputProps>(({
   className,
