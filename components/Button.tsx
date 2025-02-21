@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
+/* eslint-disable @typescript-eslint/no-empty-interface */
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
