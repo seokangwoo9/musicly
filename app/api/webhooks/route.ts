@@ -1,66 +1,70 @@
 import Stripe from "stripe";
-import {NextResponse} from "next/server";
-import {headers} from "next/headers";
+import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 
-import {stripe} from "@/libs/stripe";
+import { stripe } from "@/libs/stripe";
 import {
   upsertProductRecord,
   upsertPriceRecord,
-  manageSubscriptionStatusChange
+  manageSubscriptionStatusChange,
 } from "@/libs/supabaseAdmin";
 
 const relevantEvents = new Set([
-  'product.created',
-  'product.updated',
-  'price.created',
-  'price.updated',
-  'checkout.session.completed',
-  'customer.subscription.created',
-  'customer.subscription.updated',
-  'customer.subscription.deleted'
+  "product.created",
+  "product.updated",
+  "price.created",
+  "price.updated",
+  "checkout.session.completed",
+  "customer.subscription.created",
+  "customer.subscription.updated",
+  "customer.subscription.deleted",
 ]);
 
-export async function POST(
-  request: Request
-){
+export async function POST(request: Request) {
   const body = await request.text();
-  const sig = (await headers()).get('Stripe-Signature');
+  const sig = (await headers()).get("Stripe-Signature");
 
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   let event: Stripe.Event;
 
-  try{
-    if (!sig || !webhookSecret)return;
+  try {
+    if (!sig || !webhookSecret) return;
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
-  }catch (error: any) {
-    console.error('Error message:' + error.message);
-    return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error message: " + error.message);
+      return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 });
+    } else {
+      console.error("Unknown error:", error);
+      return new NextResponse("Webhook Error: Unknown error occurred", { status: 400 });
+    }
   }
-  if (relevantEvents.has(event.type)){
-    try{
-      switch (event.type){
-        case 'product.created':
-        case 'product.updated':
+
+  if (relevantEvents.has(event.type)) {
+    try {
+      switch (event.type) {
+        case "product.created":
+        case "product.updated":
           await upsertProductRecord(event.data.object as Stripe.Product);
           break;
-        case 'price.created':
-        case 'price.updated':
+        case "price.created":
+        case "price.updated":
           await upsertPriceRecord(event.data.object as Stripe.Price);
           break;
-        case 'customer.subscription.created':
-        case 'customer.subscription.updated':
-        case 'customer.subscription.deleted':
+        case "customer.subscription.created":
+        case "customer.subscription.updated":
+        case "customer.subscription.deleted":
           const subscription = event.data.object as Stripe.Subscription;
           await manageSubscriptionStatusChange(
             subscription.id,
             subscription.customer as string,
-            event.type === 'customer.subscription.created'
+            event.type === "customer.subscription.created"
           );
           break;
-        case 'checkout.session.completed':
+        case "checkout.session.completed":
           const checkoutSession = event.data.object as Stripe.Checkout.Session;
-          if(checkoutSession.mode === 'subscription'){
+          if (checkoutSession.mode === "subscription") {
             const subscriptionId = checkoutSession.subscription;
             await manageSubscriptionStatusChange(
               subscriptionId as string,
@@ -69,13 +73,23 @@ export async function POST(
             );
           }
           break;
-          default:
-            throw new Error('Unhandled relevant event!');
+        default:
+          throw new Error("Unhandled relevant event!");
       }
-    } catch (error:unknown){
-      console.log(error);
-      return new NextResponse('Webhook error',{status:400});
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error processing event: " + error.message);
+        return new NextResponse(`Webhook processing error: ${error.message}`, {
+          status: 400,
+        });
+      } else {
+        console.error("Unknown error while processing event:", error);
+        return new NextResponse("Webhook processing error: Unknown error", {
+          status: 400,
+        });
+      }
     }
   }
-  return NextResponse.json({received:true},{status:200});
-};
+
+  return NextResponse.json({ received: true }, { status: 200 });
+}
