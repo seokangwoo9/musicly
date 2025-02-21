@@ -4,16 +4,18 @@ import SearchInput from "@/components/SearchInput";
 import SearchContent from "./components/SearchContent";
 import { Song } from "@/types";
 
+// Correct interface definition
 interface SearchProps {
   searchParams: {
-    title?: string; // Optional to avoid errors if no title is passed
+    title?: string; // Optional to avoid runtime errors if title is not present
   };
 }
 
 export const revalidate = 0;
 
+// The function should be a server component, so it is async
 const Search = async ({ searchParams }: SearchProps) => {
-  const title = searchParams?.title || ""; // Ensure title is a string
+  const title = searchParams.title || ""; // Ensure title is always a string
   const songs: Song[] = await getSongsByTitle(title);
 
   return (
