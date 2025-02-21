@@ -5,31 +5,28 @@ import SearchContent from "./components/SearchContent";
 import { Song } from "@/types";
 
 interface SearchProps {
-  searchParams: Promise<{
-    title:string;
-
-  }>;
-};
+  searchParams: {
+    title: string;
+  };
+}
 
 export const revalidate = 0;
 
-const Search:React.FC<SearchProps> = async (props)=>{
-  const {title} = await props.searchParams;
+const Search = async (props: SearchProps) => {
+  const { title } = props.searchParams;
   const songs: Song[] = await getSongsByTitle(title);
 
   return (
-    <div className="bg-neutral-900 rounded-lg h-full w-full overflow-hidden overfow-y-auto">
+    <div className="bg-neutral-900 rounded-lg h-full w-full overflow-hidden overflow-y-auto">
       <Header className="from-bg-neutral-900">
-          <div className="mb-2 flex flex-col gap-y-6">
-            <h1 className="text-white text-3xl font-semibold">
-              Search
-            </h1>
-            <SearchInput />
-          </div>
-        </Header>
-        <SearchContent songs={songs}/>
+        <div className="mb-2 flex flex-col gap-y-6">
+          <h1 className="text-white text-3xl font-semibold">Search</h1>
+          <SearchInput />
+        </div>
+      </Header>
+      <SearchContent songs={songs} />
     </div>
-  )
-}
+  );
+};
 
 export default Search;
