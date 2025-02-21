@@ -1,6 +1,6 @@
 import {Price} from "@/types";
 
-export const getUR = ()=> {
+export const getURL = ()=> {
   let url = 
     process.env.NEXT_PUBLIC_SITE_URL ??
     process.env.NEXT_PUBLIC_VERCEL_URL ??
@@ -35,7 +35,7 @@ export const postData = async ({
   return res.json();
 };
 
-export const toDateTime = (secs:number)=> {
+export const toDateTime = (secs: number)=> {
   var t= new Date('1970-01-01T00:30:00Z');
   t.setSeconds(secs);
   return t;
